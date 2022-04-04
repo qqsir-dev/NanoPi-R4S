@@ -1,4 +1,4 @@
-name: NanoPi-R4S-Lite
+name: NanoPi-R4S-immortalwrt
 
 on:
   repository_dispatch:
@@ -9,10 +9,10 @@ on:
   #   types: started
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
-  CONFIG_FILE: configs/lean/lean_stable.config
-  DIY_SH: scripts/lean.sh
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_BRANCH: openwrt-18.06-k5.4
+  CONFIG_FILE: scripts/immortalwrt.config
+  DIY_SH: scripts/immortalwrt.sh
   IPV6MOD_IN_FIRMWARE: true
   KMODS_IN_FIRMWARE: true
   UPLOAD_WETRANSFER: true
@@ -21,7 +21,7 @@ env:
 
 jobs:
   Build:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     if: github.repository == 'DHDAXCW/NanoPi-R4S'
     outputs:
       OPENWRTROOT: ${{ steps.update.outputs.OPENWRTROOT }}
@@ -46,7 +46,6 @@ jobs:
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
-
     - name: Clone Source Code
       run: |
         df -hT $PWD
@@ -54,14 +53,7 @@ jobs:
         git config --global user.name "GitHub"
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
-        
-    - name: Cache
-      uses: klever1988/cachewrtbuild@main
-      with:
-        ccache: 'true'
-        prefix: ${{ github.workspace }}/openwrt
-        clean: 'false'
-        
+
     - name: Update Feeds
       id: update
       run: |
@@ -69,20 +61,15 @@ jobs:
         echo "OPENWRTROOT=$PWD" >> $GITHUB_ENV
         echo "::set-output name=OPENWRTROOT::$(echo $PWD)"
         mkdir customfeeds
-        git clone --depth=1 https://github.com/coolsnowwolf/packages customfeeds/packages
-        git clone --depth=1 https://github.com/coolsnowwolf/luci customfeeds/luci
+        git clone -b openwrt-18.06 https://github.com/immortalwrt/packages customfeeds/packages
+        git clone -b openwrt-18.06-k5.4 https://github.com/immortalwrt/luci customfeeds/luci
         chmod +x ../scripts/*.sh
-        ../scripts/hook-feeds.sh
-    
-    - name: MOD index file
-      run: |
-         cd $OPENWRTROOT/package/lean/autocore/files/arm
-         sed -i '/Load Average/i\\t\t<tr><td width="33%"><%:Telegram %></td><td><a href="https://t.me/DHDAXCW"><%:电报交流群%></a></td></tr>' index.htm      
+
     - name: Install Feeds
       run: |
         cd $OPENWRTROOT
         ./scripts/feeds install -a
-
+        
     - name: Load Custom Configuration
       run: |
         [ -e files ] && mv files $OPENWRTROOT/files
@@ -101,7 +88,7 @@ jobs:
         then
             echo "CONFIG_ALL_NONSHARED=y" >> .config
         fi
-        ../scripts/modify_config.sh
+
         cat .config
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
@@ -112,11 +99,11 @@ jobs:
       run: |
         cd $OPENWRTROOT
         echo -e "$(nproc) thread compile"
-        make tools/compile -j$(nproc) || make tools/compile -j1 V=s
-        make toolchain/compile -j$(nproc) || make toolchain/compile -j1 V=s
-        make target/compile -j$(nproc) || make target/compile -j1 V=s IGNORE_ERRORS=1
+        make tools/compile -j$(nproc) || make tools/compile -j20 V=s
+        make toolchain/compile -j$(nproc) || make toolchain/compile -j20 V=s
+        make target/compile -j$(nproc) || make target/compile -j20 V=s IGNORE_ERRORS=1
         make diffconfig
-        make package/compile -j$(nproc) IGNORE_ERRORS=1 || make package/compile -j1 V=s IGNORE_ERRORS=1
+        make package/compile -j$(nproc) IGNORE_ERRORS=1 || make package/compile -j20 V=s IGNORE_ERRORS=1
         make package/index
         cd $OPENWRTROOT/bin/packages/*
         PLATFORM=$(basename `pwd`)
@@ -133,7 +120,6 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=FIRMWARE::$(echo $PWD)"
         echo "::set-output name=COMPILE_STATUS::success"
-
     - name: Generate Firmware
       if: steps.compile.outputs.COMPILE_STATUS == 'success'
       id: generate
@@ -147,8 +133,6 @@ jobs:
         cp ../scripts/init-settings.sh files/etc/uci-defaults/99-init-settings
         mkdir -p files/etc/opkg
         cp ../configs/opkg/distfeeds-packages-server.conf files/etc/opkg/distfeeds.conf.server
-        mkdir -p files/etc/opkg/keys
-        cp ../configs/opkg/1035ac73cc4e59e3 files/etc/opkg/keys/1035ac73cc4e59e3
         if "$KMODS_IN_FIRMWARE" = 'true'
         then
             mkdir -p files/www/snapshots
@@ -159,24 +143,10 @@ jobs:
         fi
         cp files/etc/opkg/distfeeds.conf.server files/etc/opkg/distfeeds.conf.mirror
         sed -i "s/http:\/\/192.168.123.100:2345\/snapshots/https:\/\/openwrt.cc\/snapshots\/$(date +"%Y-%m-%d")\/lean/g" files/etc/opkg/distfeeds.conf.mirror
-        if "$IPV6MOD_IN_FIRMWARE" = 'true'
-        then
-            mkdir -p files/www/ipv6-modules
-            cp bin/packages/$PLATFORM/luci/luci-proto-ipv6* files/www/ipv6-modules
-            cp bin/packages/$PLATFORM/base/{ipv6helper*,odhcpd-ipv6only*,odhcp6c*,6in4*} "files/www/ipv6-modules"
-            cp bin/targets/$TARGET/$SUBTARGET/packages/{ip6tables*,kmod-nf-nat6*,kmod-ipt-nat6*,kmod-sit*,kmod-ip6tables-extra*} "files/www/ipv6-modules"
-            mkdir -p files/bin
-            cp ../scripts/ipv6-helper.sh files/bin/ipv6-helper
-        fi
         make package/install -j$(nproc) || make package/install -j1 V=s
         make target/install -j$(nproc) || make target/install -j1 V=s
-        rm -rf bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r4s.manifest
-        rm -rf bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r4s-rootfs.tar.gz
-        rm -rf bin/targets/rockchip/armv8/config.buildinfo
-        rm -rf bin/targets/rockchip/armv8/packages-server.zip
         make checksum
         echo "::set-output name=GENERATE_STATUS::success"
-
     - name: Upload Bin Folder
       uses: actions/upload-artifact@main
       if: steps.generate.outputs.GENERATE_STATUS == 'success'
@@ -186,7 +156,7 @@ jobs:
         
   Upload:
     needs: [Build]
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     if: github.repository == 'DHDAXCW/NanoPi-R4S'
     steps:
       - name: Checkout
@@ -239,7 +209,7 @@ jobs:
         id: tag
         if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
-          echo "::set-output name=release_tag::$(date +"%Y.%m.%d")-Lean2"
+          echo "::set-output name=release_tag::$(date +"%Y.%m.%d")-Lean3"
           echo "::set-output name=release_date::$(date +"%Y.%m.%d")"
           touch release.txt
           [ $UPLOAD_WETRANSFER = true ] && echo "后台地址：192.168.11.1" >> release.txt
@@ -250,7 +220,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: ${{ steps.tag.outputs.release_date }} NanoPi-R4S Lite_稳定版_精简
+          name: ${{ steps.tag.outputs.release_date }} NanoPi-R4S Plus_正式版_全插件
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
