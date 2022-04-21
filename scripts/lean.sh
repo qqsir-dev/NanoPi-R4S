@@ -11,6 +11,11 @@ wget -P ./target/linux/rockchip/armv8/base-files/usr/bin/ https://github.com/fri
 chmod 777 target/linux/rockchip/armv8/base-files/etc/init.d/fa-rk3399-pwmfan
 chmod 777 target/linux/rockchip/armv8/base-files/usr/bin/start-rk3399-pwm-fan.sh
 
+# Addd mosdns
+svn export https://github.com/QiuSimons/openwrt-mos/trunk/mosdns ./package/lean/mosdns
+svn export https://github.com/QiuSimons/openwrt-mos/trunk/luci-app-mosdns ./package/lean/luci-app-mosdns
+svn export https://github.com/QiuSimons/openwrt-mos/trunk/v2ray-geodata ./package/lean/v2ray-geodata
+
 rm -rf ./package/feeds/packages/baidupcs-web
 rm -rf ./package/feeds/luci/luci-app-baidupcs-web
 
@@ -26,7 +31,7 @@ ln -sf ./feeds/luci/applications/luci-app-cpufreq ./package/feeds/luci/luci-app-
 sed -i 's,1608,1800,g' feeds/luci/applications/luci-app-cpufreq/root/etc/uci-defaults/cpufreq
 sed -i 's,2016,2208,g' feeds/luci/applications/luci-app-cpufreq/root/etc/uci-defaults/cpufreq
 sed -i 's,1512,1608,g' feeds/luci/applications/luci-app-cpufreq/root/etc/uci-defaults/cpufreq
-rm -rf ./target/linux/rockchip/armv8/base-files/etc/hotplug.d
+rm -rf ./target/linux/rockchip/armv8/base-files/etc/hotplug.d/usb
 
 # Clone community packages to package/community
 mkdir package/community
@@ -75,10 +80,6 @@ git clone --depth=1 https://github.com/NateLol/luci-app-oled
 
 # Add ServerChan
 git clone --depth=1 https://github.com/tty228/luci-app-serverchan
-
-# Add luci-app-ikoolproxy (godproxy)
-git clone --depth=1 https://github.com/iwrt/luci-app-ikoolproxy.git
-rm -rf ../../customfeeds/luci/applications/luci-app-kodexplorer
 
 # Add luci-app-dockerman
 rm -rf ../../customfeeds/luci/collections/luci-lib-docker
