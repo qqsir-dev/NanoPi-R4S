@@ -4,10 +4,6 @@
 rm -rf ./feeds/packages/admin/netdata
 svn co https://github.com/DHDAXCW/packages/branches/ok/admin/netdata ./feeds/packages/admin/netdata
 
-# Add luci-app-passwall
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
-svn co https://github.com/xiaorouji/openwrt-passwall/branches/luci/luci-app-passwall
-
 #扎入风扇~
 wget -P ./target/linux/rockchip/armv8/base-files/etc/init.d/ https://github.com/friendlyarm/friendlywrt/raw/master-v19.07.1/target/linux/rockchip-rk3399/base-files/etc/init.d/fa-rk3399-pwmfan
 wget -P ./target/linux/rockchip/armv8/base-files/usr/bin/ https://github.com/friendlyarm/friendlywrt/raw/master-v19.07.1/target/linux/rockchip-rk3399/base-files/usr/bin/start-rk3399-pwm-fan.sh
@@ -22,11 +18,6 @@ svn export https://github.com/QiuSimons/openwrt-mos/trunk/v2ray-geodata ./packag
 rm -rf ./package/feeds/packages/baidupcs-web
 rm -rf ./package/feeds/luci/luci-app-baidupcs-web
 
-pushd target/linux/rockchip/image
-rm -rf armv8.mk
-wget https://raw.githubusercontent.com/DHDAXCW/lede/master/target/linux/rockchip/image/armv8.mk
-popd
-
 # Add cpufreq
 rm -rf ./feeds/luci/applications/luci-app-cpufreq 
 svn co https://github.com/immortalwrt/luci/trunk/applications/luci-app-cpufreq ./feeds/luci/applications/luci-app-cpufreq
@@ -40,6 +31,11 @@ rm -rf ./target/linux/rockchip/armv8/base-files/etc/hotplug.d/usb
 mkdir package/community
 pushd package/community
 
+
+# Add luci-app-passwall
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
+svn co https://github.com/xiaorouji/openwrt-passwall/branches/luci/luci-app-passwall
+
 # Add Lienol's Packages
 git clone --depth=1 https://github.com/Lienol/openwrt-package
 rm -rf openwrt-package/verysync
@@ -50,7 +46,7 @@ rm -rf ../../customfeeds/luci/applications/luci-app-netdata
 git clone --depth=1 https://github.com/sirpdboy/luci-app-netdata
 
 # Add luci-app-ssr-plus
-git clone --depth=1 https://github.com/DHDAXCW/helloworld
+git clone --depth=1 https://github.com/fw876/helloworld
 
 # Add luci-app-unblockneteasemusic
 rm -rf ../../customfeeds/luci/applications/luci-app-unblockmusic
