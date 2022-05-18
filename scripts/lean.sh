@@ -96,9 +96,9 @@ svn co https://github.com/msylgj/OpenWrt_luci-app/trunk/luci-app-services-wolplu
 svn co https://github.com/openwrt/packages/trunk/utils/apk
 
 # Add luci-udptools
-svn co https://github.com/zcy85611/Openwrt-Package/trunk/luci-udptools
-svn co https://github.com/zcy85611/Openwrt-Package/trunk/udp2raw
-svn co https://github.com/zcy85611/Openwrt-Package/trunk/udpspeeder
+svn co https://github.com/zcy85611/Packages/trunk/luci-udptools
+svn co https://github.com/zcy85611/Packages/trunk/udp2raw
+svn co https://github.com/zcy85611/Packages/trunk/udpspeeder
 
 # Add luci-app-poweroff
 git clone --depth=1 https://github.com/esirplayground/luci-app-poweroff
@@ -149,6 +149,10 @@ sed -i "s/OpenWrt /DHDAXCW @ FusionWrt /g" package/lean/default-settings/files/z
 #pushd target/linux/rockchip/patches-5.15
 #cp -f $GITHUB_WORKSPACE/scripts/patch/994-wode.patch 994-wode.patch
 #popd
+
+# 删除定时coremark
+rm -rf ./customfeeds/packages/utils/coremark
+svn co https://github.com/DHDAXCW/packages/trunk/utils/coremark customfeeds/packages/utils/coremark
 
 # Custom configs
 # git am $GITHUB_WORKSPACE/patches/lean/*.patch
