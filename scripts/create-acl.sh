@@ -1,4 +1,10 @@
 #!/bin/bash
+
+# [CTCGFW]Project-OpenWrt
+# Use it under GPLv3, please.
+# --------------------------------------------------------
+# Remove upx commands
+
 error_font="\033[31m[Error]$\033[0m "
 success_font="\033[32m[Success]\033[0m "
 info_font="\033[36m[Info]\033[0m "

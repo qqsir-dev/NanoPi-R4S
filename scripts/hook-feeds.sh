@@ -1,5 +1,12 @@
 #!/bin/bash
-
+#=================================================
+# File name: hook-feeds.sh
+# System Required: Linux
+# Version: 1.0
+# Lisence: MIT
+# Author: SuLingGG
+# Blog: https://mlapp.cn
+#=================================================
 # Svn checkout packages from immortalwrt's repository
 pushd customfeeds
 
