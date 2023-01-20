@@ -25,14 +25,6 @@ svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/pac
 mkdir package/community
 pushd package/community
 
-# Add Lienol's Packages
-git clone --depth=1 https://github.com/Lienol/openwrt-package
-rm -rf openwrt-package/verysync
-rm -rf openwrt-package/luci-app-verysync
-
-# Add luci-app-adguardhome
-svn export https://github.com/DHDAXCW/openwrt-packages/trunk/luci-app-adguardhome
-
 # Add luci-app-passwall
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2
@@ -62,9 +54,6 @@ svn export https://github.com/linkease/nas-packages/trunk/network/services/ddnst
 
 # Add luci-app-onliner (need luci-app-nlbwmon)
 git clone --depth=1 https://github.com/rufengsuixing/luci-app-onliner
-
-# Add ServerChan
-git clone --depth=1 https://github.com/tty228/luci-app-serverchan
 
 # Add luci-app-diskman
 # git clone --depth=1 https://github.com/SuLingGG/luci-app-diskman
