@@ -1,6 +1,6 @@
 # 中文简体 | [English](https://github.com/DHDAXCW/NanoPi-R4S-2021/blob/main/EngLish.md) <img src="https://img.shields.io/github/downloads/DHDAXCW/NanoPi-R4S-R4SE/total.svg?style=for-the-badge&color=32C955"/>
 # NanoPi-R4S-R4SE
-# 机场推荐 [ENET--IEPL内网专线接入](https://www.easy2022.com/#/register?code=Ut7iWMrk)
+# 机场推荐 [ENET--IEPL内网专线接入](https://www.easy2023.com/#/register?code=Ut7iWMrk)
 ## 👉使用本固件前，请严格遵守国家互联网使用相关法律规定,不要违反国家法律规定！👈
 
 ### 源代码地址
@@ -26,7 +26,7 @@
 - 用户名：root 密码：password  管理IP：192.168.11.1
 - 下载地址：https://github.com/DHDAXCW/NanoPi-R4S-R4SE/releases
 - x86_64固件下载 https://github.com/DHDAXCW/OpenWRT_x86_x64/releases
-- 关于r4se刷机方法请参考dn2刷机 https://github.com/DHDAXCW/DoorNet2/blob/main/emmc.md
+- 关于r4se刷机方法请参考dn2刷机 https://github.com/DHDAXCW/DoorNet-1-2/blob/mere/emmc.md
 - 电报群：https://t.me/DHDAXCW
 
 ### 该升级支持4G版，1G版
