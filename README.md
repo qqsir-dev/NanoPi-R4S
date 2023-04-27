@@ -2,7 +2,7 @@
 # NanoPi-R4S-R4SE
 # 机场推荐 [ENET--IEPL内网专线接入](https://www.easy2023.com/#/register?code=Ut7iWMrk)
 ## 👉使用本固件前，请严格遵守国家互联网使用相关法律规定,不要违反国家法律规定！👈
-
+## 未经许可不得用于任何商用用途。
 ### 源代码地址
 - lede https://github.com/DHDAXCW/lede-rockchip
 - Luci https://github.com/DHDAXCW/luci
@@ -46,15 +46,6 @@ wget https://raw.githubusercontent.com/lone-wind/scripts/main/onlineupdate.sh &&
 
 # [赏个鸡腿吧](https://afdian.net/@dhdaxcw/plan)
 ### https://afdian.net/@dhdaxcw/plan
-
-请不要fork我项目，因为yml文件中已托管到我本地服务器，目的是为了加速编译。
-如果想fork自己编译，那就请到yml文件中修改下面
-```bash
-23行 runs-on: self-hosted 改为 runs-on: ubuntu-20.04
-185行 runs-on: self-hosted 改为 runs-on: ubuntu-20.04
-```
-另外，如果改上面的，那还要改编译线程，我默认是-j72
-改好就可以用github的机器编译了
 
 ## 鸣谢
 
