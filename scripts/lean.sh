@@ -115,11 +115,6 @@ export date_version=$(date -d "$(rdate -n -4 -p ntp.aliyun.com)" +'%Y-%m-%d')
 sed -i "s/${orig_version}/${orig_version} (${date_version})/g" zzz-default-settings
 popd
 
-# Fix mt76 wireless driver
-pushd package/kernel/mt76
-sed -i '/mt7662u_rom_patch.bin/a\\techo mt76-usb disable_usb_sg=1 > $\(1\)\/etc\/modules.d\/mt76-usb' Makefile
-popd
-
 # Change default shell to zsh
 sed -i 's/\/bin\/ash/\/usr\/bin\/zsh/g' package/base-files/files/etc/passwd
 
@@ -133,6 +128,20 @@ svn export https://github.com/DHDAXCW/packages/trunk/utils/coremark customfeeds/
 # 风扇脚本
 wget -P target/linux/rockchip/armv8/base-files/etc/init.d/ https://github.com/friendlyarm/friendlywrt/raw/master-v19.07.1/target/linux/rockchip-rk3399/base-files/etc/init.d/fa-rk3399-pwmfan
 wget -P target/linux/rockchip/armv8/base-files/usr/bin/ https://github.com/friendlyarm/friendlywrt/raw/master-v19.07.1/target/linux/rockchip-rk3399/base-files/usr/bin/start-rk3399-pwm-fan.sh
+chmod u+x target/linux/rockchip/armv8/base-files/etc/init.d/fa-rk3399-pwmfan
+chmod u+x target/linux/rockchip/armv8/base-files/usr/bin/start-rk3399-pwm-fan.sh
+
+# 开启ARM KVM支持
+cat >> target/linux/rockchip/armv8/config-5.4 <<EOF
+CONFIG_VIRTUALIZATION=y
+CONFIG_KVM=y
+CONFIG_KVM_ARM_HOST=y
+CONFIG_KVM_GENERIC_DIRTYLOG_READ_PROTECT=y
+CONFIG_KVM_INDIRECT_VECTORS=y
+CONFIG_KVM_MMIO=y
+CONFIG_KVM_VFIO=y
+CONFIG_VHOST_NET=y
+EOF
 
 # Test kernel 5.15
 # sed -i 's/5.4/6.0/g' ./target/linux/rockchip/Makefile
